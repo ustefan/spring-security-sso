@@ -1,80 +1,25 @@
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://www.springframework.org/schema/beans"
        xmlns:security="http://www.springframework.org/schema/security"
-       xmlns:oauth="http://www.springframework.org/schema/security/oauth2"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
                            http://www.springframework.org/schema/security
-                           http://www.springframework.org/schema/security/spring-security-4.0.xsd
-                           http://www.springframework.org/schema/security/oauth2
-                           http://www.springframework.org/schema/security/spring-security-oauth2-2.0.xsd">
-
-  <!-- Authorization server -->
-  <oauth:authorization-server client-details-service-ref="clientDetails" token-services-ref="tokenService">
-    <oauth:authorization-code/>
-  </oauth:authorization-server>
-
-  <oauth:client-details-service id="clientDetails">
-    <oauth:client client-id="restapp"
-                  secret="secret"
-                  scope="read"
-                  resource-ids="rest"
-                  authorized-grant-types="authorization_code"
-                  authorities="ROLE_CLIENT"
-                  redirect-uri="http://localhost:8080/"/>
-  </oauth:client-details-service>
-
-  <security:http pattern="/oauth/token*"
-                 use-expressions="true"
-                 create-session="stateless"
-                 authentication-manager-ref="clientAuthenticationManager">
-
-    <security:http-basic entry-point-ref="clientAuthenticationEntryPoint"/>
-    <security:anonymous enabled="false"/>
-    <security:intercept-url pattern="/oauth/token*" access="hasRole('ROLE_CLIENT')"/>
-    <security:csrf disabled="true"/>
-  </security:http>
-
-  <security:authentication-manager id="clientAuthenticationManager">
-    <security:authentication-provider user-service-ref="clientDetailsUserService"/>
-  </security:authentication-manager>
-
-  <bean id="clientDetailsUserService"
-        class="org.springframework.security.oauth2.provider.client.ClientDetailsUserDetailsService">
-    <constructor-arg ref="clientDetails"/>
-  </bean>
-
-  <bean id="clientAuthenticationEntryPoint"
-        class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
-    <property name="realmName" value="rest/client"/>
-    <property name="typeName" value="Basic"/>
-  </bean>
-
-  <!-- Resource server -->
-  <oauth:resource-server id="resourceServerFilter"
-                         resource-id="rest"
-                         token-services-ref="tokenService"/>
+                           http://www.springframework.org/schema/security/spring-security-4.0.xsd">r>
 
   <security:http pattern="/rest/**"
                  use-expressions="true"
                  create-session="stateless"
-                 entry-point-ref="oauthAuthenticationEntryPoint">
+                 entry-point-ref="http403ForbiddenEntryPoint">
 
     <security:anonymous enabled="false"/>
     <security:intercept-url pattern="/rest/**"/>
-    <security:custom-filter ref="resourceServerFilter" before="PRE_AUTH_FILTER"/>
+    <security:custom-filter ref="ssoFilter" before="PRE_AUTH_FILTER"/>
   </security:http>
 
-  <bean id="oauthAuthenticationEntryPoint"
-        class="org.springframework.security.oauth2.provider.error.OAuth2AuthenticationEntryPoint">
-    <property name="realmName" value="rest"/>
-  </bean>
+  <bean id="http403ForbiddenEntryPoint"
+        class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
 
-  <!-- Common -->
-  <bean id="tokenService" class="org.springframework.security.oauth2.provider.token.DefaultTokenServices">
-    <property name="tokenStore" ref="tokenStore"/>
-  </bean>
-  <bean id="tokenStore" class="org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore"/>
+  <bean id="ssoFilter" class="com.scu.sso.filter.SSOFilter"/>
 
   <security:http pattern="/**" use-expressions="true">
     <security:intercept-url pattern="/login*" access="permitAll()"/>
