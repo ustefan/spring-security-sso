@@ -1,17 +1,18 @@
 package com.scu.sso.filter;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import javax.servlet.*;
+import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+public class SSOFilter implements Filter {
+    public void init(FilterConfig filterConfig) throws ServletException {
 
-public class SSOFilter extends UsernamePasswordAuthenticationFilter {
-  @Override
-  public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-      throws AuthenticationException {
+    }
 
-    return super.attemptAuthentication(request, response);
-  }
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        System.out.println();
+    }
+
+    public void destroy() {
+
+    }
 }

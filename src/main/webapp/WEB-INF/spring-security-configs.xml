@@ -4,34 +4,28 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
                            http://www.springframework.org/schema/security
-                           http://www.springframework.org/schema/security/spring-security-4.0.xsd">r>
+                           http://www.springframework.org/schema/security/spring-security-4.0.xsd">
 
-  <security:http pattern="/rest/**"
-                 use-expressions="true"
-                 create-session="stateless"
-                 entry-point-ref="http403ForbiddenEntryPoint">
+    <security:http pattern="/**"
+                   use-expressions="true"
+                   create-session="stateless"
+                   entry-point-ref="http403ForbiddenEntryPoint">
 
-    <security:anonymous enabled="false"/>
-    <security:intercept-url pattern="/rest/**"/>
-    <security:custom-filter ref="ssoFilter" before="PRE_AUTH_FILTER"/>
-  </security:http>
+        <security:anonymous enabled="false"/>
+        <security:intercept-url pattern="/**"/>
+        <security:custom-filter ref="ssoFilter" before="PRE_AUTH_FILTER"/>
+    </security:http>
 
-  <bean id="http403ForbiddenEntryPoint"
-        class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
+    <bean id="http403ForbiddenEntryPoint"
+          class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
 
-  <bean id="ssoFilter" class="com.scu.sso.filter.SSOFilter"/>
+    <bean id="ssoFilter" class="com.scu.sso.filter.SSOFilter"/>
 
-  <security:http pattern="/**" use-expressions="true">
-    <security:intercept-url pattern="/login*" access="permitAll()"/>
-    <security:intercept-url pattern="/**" access="isAuthenticated()"/>
-    <security:form-login/>
-  </security:http>
-
-  <security:authentication-manager alias="authenticationManager">
-    <security:authentication-provider>
-      <security:user-service>
-        <security:user name="user" password="pass" authorities="ROLE_USER"/>
-      </security:user-service>
-    </security:authentication-provider>
-  </security:authentication-manager>
+    <security:authentication-manager alias="authenticationManager">
+        <security:authentication-provider>
+            <security:user-service>
+                <security:user name="user" password="pass" authorities="ROLE_USER"/>
+            </security:user-service>
+        </security:authentication-provider>
+    </security:authentication-manager>
 </beans>
