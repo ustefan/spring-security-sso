@@ -6,26 +6,30 @@
                            http://www.springframework.org/schema/security
                            http://www.springframework.org/schema/security/spring-security-4.0.xsd">
 
-    <security:http pattern="/**"
-                   use-expressions="true"
-                   create-session="stateless"
-                   entry-point-ref="http403ForbiddenEntryPoint">
+  <security:http pattern="/**"
+                 use-expressions="true"
+                 entry-point-ref="http403ForbiddenEntryPoint">
 
-        <security:anonymous enabled="false"/>
-        <security:intercept-url pattern="/**"/>
-        <security:custom-filter ref="ssoFilter" before="PRE_AUTH_FILTER"/>
-    </security:http>
+    <security:anonymous enabled="false"/>
+    <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
+    <security:custom-filter ref="preAuthFilter" before="PRE_AUTH_FILTER"/>
+  </security:http>
 
-    <bean id="http403ForbiddenEntryPoint"
-          class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
+  <bean id="http403ForbiddenEntryPoint"
+        class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
 
-    <bean id="ssoFilter" class="com.scu.sso.filter.SSOFilter"/>
+  <bean id="preAuthFilter" class="com.scu.sso.filters.PreAuthFilter">
+    <property name="authenticationManager" ref="authenticationManager"/>
+  </bean>
 
-    <security:authentication-manager alias="authenticationManager">
-        <security:authentication-provider>
-            <security:user-service>
-                <security:user name="user" password="pass" authorities="ROLE_USER"/>
-            </security:user-service>
-        </security:authentication-provider>
-    </security:authentication-manager>
+  <security:authentication-manager alias="authenticationManager">
+    <security:authentication-provider ref="preAuthProvider"/>
+  </security:authentication-manager>
+
+  <bean id="preAuthProvider"
+        class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
+    <property name="preAuthenticatedUserDetailsService" ref="preAuthDetailsService"/>
+  </bean>
+
+  <bean id="preAuthDetailsService" class="com.scu.sso.services.PreAuthUserDetailsService"/>
 </beans>
