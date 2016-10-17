@@ -12,11 +12,19 @@
 
     <security:anonymous enabled="false"/>
     <security:intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
+    <security:custom-filter ref="loginFilter" after="SECURITY_CONTEXT_FILTER"/>
     <security:custom-filter ref="preAuthFilter" before="PRE_AUTH_FILTER"/>
+
+    <security:logout logout-success-url="/" logout-url="/logout"/>
+    <security:csrf disabled="true"/>
   </security:http>
 
   <bean id="http403ForbiddenEntryPoint"
         class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
+
+  <bean id="loginFilter" class="com.scu.sso.filters.LoginFilter">
+    <property name="loginUrl" value="http://localhost:8089/login"/>
+  </bean>
 
   <bean id="preAuthFilter" class="com.scu.sso.filters.PreAuthFilter">
     <property name="authenticationManager" ref="authenticationManager"/>
