@@ -7,6 +7,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Used to extract the user credentials from request.
+ */
 public class PreAuthFilter extends AbstractPreAuthenticatedProcessingFilter {
   private static final String TOKEN = "token";
 

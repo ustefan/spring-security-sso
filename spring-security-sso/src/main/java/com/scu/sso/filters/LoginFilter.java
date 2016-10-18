@@ -12,6 +12,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Used to check if the user is logged in or has an access token to log in.
+ */
 public class LoginFilter extends OncePerRequestFilter {
   private static final String TOKEN = "token";
 
